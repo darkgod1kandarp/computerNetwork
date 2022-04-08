@@ -8,11 +8,6 @@
 #define PORT 8000
 #define MAXLINE 1024
 
-struct struct_data
-{   int type ;
-    int size;
-    char data[MAXLINE];
-};
 
 int main()
 {
@@ -21,12 +16,13 @@ int main()
     int sockfd;
     struct sockaddr_in server_addr, client_addr;
 
-    struct struct_data
-    {   
+    struct file_request
+    {
         int type;
         int size;
         char data[MAXLINE];
-    } firsttype;
+    } filerequest;
+   
 
     if ((sockfd = socket(AF_INET, SOCK_DGRAM, 0)) < 0)
     {
@@ -46,9 +42,9 @@ int main()
 
     int len = sizeof(client_addr);
 
-    recvfrom(sockfd, (struct struct_data *)&firsttype, sizeof(firsttype), MSG_WAITALL, (struct sockaddr *)&client_addr, &len);
+    recvfrom(sockfd, (struct struct_data *)&filerequest, sizeof(filerequest), MSG_WAITALL, (struct sockaddr *)&client_addr, &len);
 
     
-    printf("%s", firsttype.data);
+    printf("%s", filerequest.data);
    
 }

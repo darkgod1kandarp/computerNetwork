@@ -8,12 +8,12 @@
 #define PORT 8000
 #define MAXLINE 1024
 
-struct struct_data
-{  int type;
+struct file_request
+{
+    int type;
     int size;
     char data[MAXLINE];
 };
-
 
 int main(int argc, char *argv[])
 {
@@ -25,13 +25,9 @@ int main(int argc, char *argv[])
     }
 
     char buffer[MAXLINE];
-    struct struct_data firsttype ;
-   
+    struct file_request filerequest;
+
     fgets(buffer, MAXLINE, stdin);
-    
-    
-    
-    int sizing   = sizeof(firsttype.data);
 
     int sockfd;
     if ((sockfd = socket(AF_INET, SOCK_DGRAM, 0)) < 0)
@@ -45,11 +41,11 @@ int main(int argc, char *argv[])
     client_addr.sin_family = AF_INET;
     client_addr.sin_port = htons(atoi(argv[1]));
     client_addr.sin_addr.s_addr = inet_addr(argv[2]);
-    
-   firsttype.type = 1;
-   
-   buffer[MAXLINE -1] = '\0';
-   firsttype.size = strlen(buffer);
-   strcpy(firsttype.data, buffer);
-    sendto(sockfd, (void *) &firsttype ,sizeof(firsttype), MSG_CONFIRM, (struct sockaddr *)&client_addr, sizeof(client_addr));
+
+    filerequest.type = 1;
+
+    buffer[MAXLINE - 1] = '\0';
+    filerequest.size = strlen(buffer);
+    strcpy(filerequest.data, buffer);
+    sendto(sockfd, (void *)&filerequest, sizeof(filerequest), MSG_CONFIRM, (struct sockaddr *)&client_addr, sizeof(client_addr));
 }
