@@ -43,12 +43,22 @@ struct file_request
 int main()
 {
 
-    char *buffer[50];
     int sockfd;
     struct sockaddr_in server_addr, client_addr;
-    struct file_request filerequest;
 
-        if ((sockfd = socket(AF_INET, SOCK_DGRAM, 0)) < 0)
+    // storing variable
+    char buffer[MAXLINE];
+    char filename[MAXLINE];
+    int filenameLength;
+
+    // all local struct defining
+    struct file_request filerequest;
+    struct File_info_and_data fileFirstData;
+
+    // File pointer defining
+    FILE *FILE1;
+
+    if ((sockfd = socket(AF_INET, SOCK_DGRAM, 0)) < 0)
     {
         perror("socket");
         exit(EXIT_FAILURE);
@@ -66,7 +76,35 @@ int main()
 
     int len = sizeof(client_addr);
 
-    recvfrom(sockfd, (struct struct_data *)&filerequest, sizeof(filerequest), MSG_WAITALL, (struct sockaddr *)&client_addr, &len);
+    recvfrom(sockfd, (struct file_request *)&filerequest, sizeof(filerequest), MSG_WAITALL, (struct sockaddr *)&client_addr, &len);
+   
 
-    printf("%s", filerequest.data);
+    //storing the file name in the filename variable
+    strcpy(filename, filerequest.data);
+    
+    //storing the filename length in the filenameLength variable
+    filenameLength = strlen(filename);
+
+    //removing the newline character from the filename
+    filename[filenameLength - 1] = '\0';
+
+    //FILE1 is the file pointer to the file
+    FILE1 = fopen(filename, "rb");
+    
+    //if the file is not founde
+    if (FILE1 == NULL)
+    {
+        perror("File not found");
+        exit(EXIT_FAILURE);
+    }
+    
+
+    //reading the file 
+    while (!feof(FILE1))
+    {
+        fread(buffer, sizeof(buffer), 1, FILE1);
+        printf("%s", buffer);
+    }
+
+    //  sendto(sockfd, (struct File_info_and_data *)&fileFirstData, sizeof(fileFirstData), MSG_CONFIRM, (struct sockaddr *)&client_addr, &len);
 }

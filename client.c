@@ -31,12 +31,12 @@ struct ACK
     int num_sequences;
     int sequence_no[SEQUENCENUM];
 };
-struct File_not_found {
-    int type ;
+struct File_not_found
+{
+    int type;
     int filename_size;
     char filename[MAXLINE];
 };
-
 
 int main(int argc, char *argv[])
 {
@@ -47,9 +47,19 @@ int main(int argc, char *argv[])
         exit(EXIT_FAILURE);
     }
 
-    char buffer[MAXLINE];
-    struct file_request filerequest;
+    // condition checking variable
+    int recvChecking; // recvChecking is used to check the recv function
 
+    // all local struct defining
+    struct file_request filerequest;
+    struct File_info_and_data fileFirstData;
+    struct sockaddr_in client_addr;
+
+    // storing variable
+    char buffer[MAXLINE];
+    int len = sizeof(client_addr);
+
+    // taking user input
     fgets(buffer, MAXLINE, stdin);
 
     int sockfd;
@@ -58,8 +68,6 @@ int main(int argc, char *argv[])
         perror("socket");
         exit(EXIT_FAILURE);
     }
-
-    struct sockaddr_in client_addr;
 
     client_addr.sin_family = AF_INET;
     client_addr.sin_port = htons(atoi(argv[1]));
@@ -71,4 +79,5 @@ int main(int argc, char *argv[])
     filerequest.size = strlen(buffer);
     strcpy(filerequest.data, buffer);
     sendto(sockfd, (void *)&filerequest, sizeof(filerequest), MSG_CONFIRM, (struct sockaddr *)&client_addr, sizeof(client_addr));
+
 }
