@@ -22,7 +22,8 @@ int main()
     struct sockaddr_in server_addr, client_addr;
 
     struct struct_data
-    {
+    {   
+        int type;
         int size;
         char data[MAXLINE];
     } firsttype;
@@ -48,6 +49,6 @@ int main()
     recvfrom(sockfd, (struct struct_data *)&firsttype, sizeof(firsttype), MSG_WAITALL, (struct sockaddr *)&client_addr, &len);
 
     
-    printf("%s\n", firsttype.data);
+    printf("%s", firsttype.data);
    
 }

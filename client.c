@@ -46,11 +46,10 @@ int main(int argc, char *argv[])
     client_addr.sin_port = htons(atoi(argv[1]));
     client_addr.sin_addr.s_addr = inet_addr(argv[2]);
     
-    firsttype.size = strlen(buffer);
-    
-    strcpy(firsttype.data , buffer);
-    firsttype.type = 0;
-    printf("%d\n", sizing);
-     
+   firsttype.type = 1;
+   
+   buffer[MAXLINE -1] = '\0';
+   firsttype.size = strlen(buffer);
+   strcpy(firsttype.data, buffer);
     sendto(sockfd, (void *) &firsttype ,sizeof(firsttype), MSG_CONFIRM, (struct sockaddr *)&client_addr, sizeof(client_addr));
 }
