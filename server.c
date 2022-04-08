@@ -7,7 +7,38 @@
 #include <arpa/inet.h>
 #define PORT 8000
 #define MAXLINE 1024
+#define BLOCKSIZE 1024
+#define SEQUENCENUM 8
+struct File_info_and_data
+{
+    int type;
+    long long sequence_number;
+    int filename_size;
+    char filename[MAXLINE];
+    long long file_size;
+    long long block_size;
+    char data[BLOCKSIZE];
+};
 
+struct File_not_found
+{
+    int type;
+    int filename_size;
+    char filename[MAXLINE];
+};
+
+struct ACK
+{
+    int type;
+    int num_sequences;
+    int sequence_no[SEQUENCENUM];
+};
+struct file_request
+{
+    int type;
+    int size;
+    char data[MAXLINE];
+};
 
 int main()
 {
@@ -15,16 +46,9 @@ int main()
     char *buffer[50];
     int sockfd;
     struct sockaddr_in server_addr, client_addr;
+    struct file_request filerequest;
 
-    struct file_request
-    {
-        int type;
-        int size;
-        char data[MAXLINE];
-    } filerequest;
-   
-
-    if ((sockfd = socket(AF_INET, SOCK_DGRAM, 0)) < 0)
+        if ((sockfd = socket(AF_INET, SOCK_DGRAM, 0)) < 0)
     {
         perror("socket");
         exit(EXIT_FAILURE);
@@ -44,7 +68,5 @@ int main()
 
     recvfrom(sockfd, (struct struct_data *)&filerequest, sizeof(filerequest), MSG_WAITALL, (struct sockaddr *)&client_addr, &len);
 
-    
     printf("%s", filerequest.data);
-   
 }

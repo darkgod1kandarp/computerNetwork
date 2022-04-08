@@ -5,15 +5,38 @@
 #include <string.h>
 #include <unistd.h>
 #include <arpa/inet.h>
-#define PORT 8000
 #define MAXLINE 1024
-
+#define BLOCKSIZE 1024
+#define SEQUENCENUM 8
 struct file_request
 {
     int type;
     int size;
     char data[MAXLINE];
 };
+
+struct File_info_and_data
+{
+    int type;
+    long long sequence_number;
+    int filename_size;
+    char filename[MAXLINE];
+    long long file_size;
+    long long block_size;
+    char data[BLOCKSIZE];
+};
+struct ACK
+{
+    int type;
+    int num_sequences;
+    int sequence_no[SEQUENCENUM];
+};
+struct File_not_found {
+    int type ;
+    int filename_size;
+    char filename[MAXLINE];
+};
+
 
 int main(int argc, char *argv[])
 {
