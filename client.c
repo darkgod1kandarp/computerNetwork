@@ -1,3 +1,5 @@
+// Au1940112 kandarp sharda
+// AU1940064 Rushabh shah
 #include <stdio.h>
 #include <stdlib.h>
 #include <netinet/in.h>
@@ -36,6 +38,16 @@ struct File_not_found
     int type;
     int filename_size;
     char filename[MAXLINE];
+};
+
+struct Data
+{
+    int type;
+    int sequence_number;
+    long long  block_size;
+    char data[BLOCKSIZE];
+
+
 };
 
 int main(int argc, char *argv[])
@@ -80,4 +92,13 @@ int main(int argc, char *argv[])
     strcpy(filerequest.data, buffer);
     sendto(sockfd, (void *)&filerequest, sizeof(filerequest), MSG_CONFIRM, (struct sockaddr *)&client_addr, sizeof(client_addr));
 
+    while (1)
+    {
+     recvfrom(sockfd, (struct File_info_and_data *)&fileFirstData, sizeof(fileFirstData), MSG_WAITALL, (struct sockaddr *)&client_addr, &len);
+     printf("%s", fileFirstData.data);
+     if (strcmp("EOF", fileFirstData.data)==0)
+     {
+         break;
+     }
+    }
 }

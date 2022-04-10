@@ -1,3 +1,6 @@
+// Au1940112 kandarp sharda
+// AU1940064 Rushabh shah
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <netinet/in.h>
@@ -39,6 +42,13 @@ struct file_request
     int size;
     char data[MAXLINE];
 };
+struct Data
+{
+    int type;
+    int sequence_number;
+    long long block_size;
+    char data[BLOCKSIZE];
+};
 
 int main()
 {
@@ -50,6 +60,7 @@ int main()
     char buffer[MAXLINE];
     char filename[MAXLINE];
     int filenameLength;
+    int fileSize;
 
     // all local struct defining
     struct file_request filerequest;
@@ -77,34 +88,48 @@ int main()
     int len = sizeof(client_addr);
 
     recvfrom(sockfd, (struct file_request *)&filerequest, sizeof(filerequest), MSG_WAITALL, (struct sockaddr *)&client_addr, &len);
-   
 
-    //storing the file name in the filename variable
+    // storing the file name in the filename variable
     strcpy(filename, filerequest.data);
-    
-    //storing the filename length in the filenameLength variable
+
+    // storing the filename length in the filenameLength variable
     filenameLength = strlen(filename);
 
-    //removing the newline character from the filename
+    // removing the newline character from the filename
     filename[filenameLength - 1] = '\0';
 
-    //FILE1 is the file pointer to the file
+    // FILE1 is the file pointer to the file
     FILE1 = fopen(filename, "rb");
-    
-    //if the file is not founde
+
+    // if the file is not founde
     if (FILE1 == NULL)
     {
         perror("File not found");
         exit(EXIT_FAILURE);
     }
-    
 
-    //reading the file 
+    // fileSize finding and storing in the fileSize variable
+    fseek(FILE1, 0, SEEK_END); // seek to end of file
+    fileSize = ftell(FILE1);   // get current file pointer
+    fseek(FILE1, 0, SEEK_SET); // seek back to beginning of file
+
+    // reading and sending the file
     while (!feof(FILE1))
     {
-        fread(buffer, sizeof(buffer), 1, FILE1);
-        printf("%s", buffer);
-    }
 
-    //  sendto(sockfd, (struct File_info_and_data *)&fileFirstData, sizeof(fileFirstData), MSG_CONFIRM, (struct sockaddr *)&client_addr, &len);
+        fread(buffer, sizeof(buffer), 1, FILE1);
+
+        // storing the file data  and other data in the fileFirstData variable
+        fileFirstData.type = 1;
+        fileFirstData.sequence_number = 3;
+        fileFirstData.filename_size = fileSize;
+        fileFirstData.block_size = BLOCKSIZE;
+        fileFirstData.file_size = fileSize;
+        strcpy(fileFirstData.data, buffer);
+
+        // sending the first block
+        sendto(sockfd, (struct File_info_and_data *)&fileFirstData, sizeof(fileFirstData), MSG_CONFIRM, (struct sockaddr *)&client_addr, sizeof(client_addr));
+    }
+    strcpy(fileFirstData.data, "EOF");
+    sendto(sockfd, (struct File_info_and_data *)&fileFirstData, sizeof(fileFirstData), MSG_CONFIRM, (struct sockaddr *)&client_addr, sizeof(client_addr));
 }
